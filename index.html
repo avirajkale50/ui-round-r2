@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice-Driven E-Library</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="digital-library.png" type="image/x-icon">
+    <style>
+        .hero-3d {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: transparent;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Ambient light effect */
+        .hero-3d::before {
+            content: '';
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0) 70%);
+            animation: lightMove 8s infinite linear;
+        }
+
+        @keyframes lightMove {
+            0% { transform: translate(-25%, -25%) rotate(0deg); }
+            100% { transform: translate(-25%, -25%) rotate(360deg); }
+        }
+
+        .book-3d {
+            width: 240px;
+            height: 340px;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: initRotate 8s infinite linear;
+            cursor: pointer;
+        }
+
+        .book-3d:hover {
+            animation-play-state: paused;
+        }
+
+        @keyframes initRotate {
+            0% { transform: rotateY(0deg) rotateX(10deg); }
+            100% { transform: rotateY(360deg) rotateX(10deg); }
+        }
+
+        .face {
+            position: absolute;
+            width: 240px;
+            height: 340px;
+            border: 2px solid #2a2a2a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        }
+
+        /* Front cover */
+        .front {
+            transform: translateZ(25px);
+            background: #800000;
+            background-image: 
+                linear-gradient(45deg, rgba(0,0,0,0.1) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(0,0,0,0.1) 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, rgba(0,0,0,0.1) 75%),
+                linear-gradient(-45deg, transparent 75%, rgba(0,0,0,0.1) 75%);
+            background-size: 10px 10px;
+            color: #ffd700;
+            border: 8px solid #590016;
+            text-shadow: 2px 2px 2px rgba(0,0,0,0.5);
+        }
+
+        /* Back cover */
+        .back {
+            transform: translateZ(-25px) rotateY(180deg);
+            background: #800020;
+            background-image: 
+                linear-gradient(45deg, rgba(0,0,0,0.1) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(0,0,0,0.1) 25%, transparent 25%);
+            background-size: 10px 10px;
+            border: 8px solid #590016;
+            color: #ffd700;
+        }
+
+        /* Spine */
+        .spine {
+            width: 50px;
+            transform: rotateY(-90deg) translateZ(95px);
+            background: #590016;
+            background-image: linear-gradient(to bottom, rgba(255,215,0,0.2), rgba(255,215,0,0.1));
+            color: #ffd700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            letter-spacing: 3px;
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+            border-left: none;
+            border-right: none;
+        }
+
+        /* Pages */
+        .pages-container {
+            position: absolute;
+            width: 230px;
+            height: 330px;
+            transform-style: preserve-3d;
+            left: 5px;
+            top: 5px;
+        }
+
+        .page {
+            position: absolute;
+            width: 230px;
+            height: 330px;
+            background: linear-gradient(to right, #fff 0%, #f0f0f0 100%);
+            transform-origin: left center;
+            transform-style: preserve-3d;
+            box-shadow: inset -1px 0 5px rgba(0,0,0,0.1);
+            background-image: 
+                linear-gradient(90deg, rgba(255,215,0,0.1) 0%, transparent 8%),
+                linear-gradient(90deg, transparent 92%, rgba(255,215,0,0.3) 100%);
+        }
+
+        .page1 { transform: rotateY(-5deg); }
+        .page2 { transform: rotateY(-4deg); }
+        .page3 { transform: rotateY(-3deg); }
+        .page4 { transform: rotateY(-2deg); }
+        .page5 { transform: rotateY(-1deg); }
+
+        /* Gilded edges */
+        .top {
+            height: 50px;
+            transform: rotateX(90deg) translateZ(-25px);
+            background: linear-gradient(to bottom, #fff, #ffd700);
+        }
+
+        .bottom {
+            height: 50px;
+            transform: rotateX(-90deg) translateZ(290px);
+            background: linear-gradient(to top, #fff, #ffd700);
+        }
+
+        /* Book content */
+        .book-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .book-title {
+            font-size: 28px;
+            margin-bottom: 20px;
+            font-family: "Times New Roman", serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .book-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 2px;
+            background: #ffd700;
+            box-shadow: 0 0 10px rgba(255,215,0,0.5);
+        }
+
+        .book-author {
+            font-size: 18px;
+            opacity: 0.9;
+            font-style: italic;
+            color: #ffd700;
+        }
+
+        /* Decorative corners */
+        .corner {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 2px solid #ffd700;
+            pointer-events: none;
+        }
+
+        .corner-tl { top: 10px; left: 10px; border-right: none; border-bottom: none; }
+        .corner-tr { top: 10px; right: 10px; border-left: none; border-bottom: none; }
+        .corner-bl { bottom: 10px; left: 10px; border-right: none; border-top: none; }
+        .corner-br { bottom: 10px; right: 10px; border-left: none; border-top: none; }
+
+        /* Accessibility */
+        .book-3d:focus {
+            outline: none;
+            animation-play-state: paused;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .book-3d, .hero-3d::before {
+                animation: none;
+            }
+            .book-3d:hover {
+                transform: rotateY(45deg) rotateX(10deg);
+                transition: transform 0.3s ease;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <div class="logo">
+                <img src="./digital-library.png" alt="lib">
+                ISTE-Library
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#featured-books">Featured</a></li>
+                <li><a href="#categories">Categories</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <button id="theme-toggle" aria-label="Toggle dark/light theme">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="theme-icon light"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="theme-icon dark"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            </button>
+        </div>
+    </nav>
+
+    <header id="home">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Voice-Driven E-Library</h1>
+                <p>An accessible library for everyone</p>
+                <a href="#search-section" class="btn-primary">Start Exploring</a>
+            </div>
+            <div class="hero-image">
+                <div class="hero-3d">
+                    <div class="book-3d" tabindex="0" role="img" aria-label="3D Interactive Book - Voice-Driven E-Library">
+                        <div class="face front">
+                            <div class="corner corner-tl"></div>
+                            <div class="corner corner-tr"></div>
+                            <div class="corner corner-bl"></div>
+                            <div class="corner corner-br"></div>
+                            <div class="book-content">
+                                <div class="book-title">Voice-Driven E-Library</div>
+                                <div class="book-author">An accessible library for everyone</div>
+                            </div>
+                        </div>
+                        <div class="pages-container">
+                            <div class="page page1"></div>
+                            <div class="page page2"></div>
+                            <div class="page page3"></div>
+                            <div class="page page4"></div>
+                            <div class="page page5"></div>
+                        </div>
+                        <div class="face back">
+                            <div class="corner corner-tl"></div>
+                            <div class="corner corner-tr"></div>
+                            <div class="corner corner-bl"></div>
+                            <div class="corner corner-br"></div>
+                            <p>Discover the future of accessible reading</p>
+                        </div>
+                        <div class="face spine">
+                            <span>Voice-Driven E-Library</span>
+                        </div>
+                        <div class="face top"></div>
+                        <div class="face bottom"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <section id="search-section">
+                <h2>Search for Books</h2>
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="Search for books..." aria-label="Search for books">
+                    <button id="search-button" aria-label="Search">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <span class="sr-only">Search</span>
+                    </button>
+                    <button id="voice-search-button" aria-label="Voice Search">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" x2="12" y1="19" y2="22"></line></svg>
+                        <span class="sr-only">Voice Search</span>
+                    </button>
+                </div>
+            </section>
+            <section id="results-section">
+                <h2>Search Results</h2>
+                <div id="results-container">
+                    <!-- Search results will be dynamically inserted here -->
+                </div>
+            </section>
+
+            
+            <section id="voice-commands">
+                <h2>Voice Commands</h2>
+                <ul>
+                    <li>"Search for [book title]"</li>
+                    <li>"Open book [number]"</li>
+                    <li>"Go back to results"</li>
+                    <li>"Read book summary"</li>
+                </ul>
+            </section>
+
+            <section id="featured-books">
+                <h2>Featured Books</h2>
+                <div class="book-carousel">
+                    <div class="book-card">
+                        <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80" alt="Book Cover" class="book-cover">
+                        <h3>The Great Gatsby</h3>
+                        <p>F. Scott Fitzgerald</p>
+                        <button class="btn-secondary">Read More</button>
+                    </div>
+                    <div class="book-card">
+                        <img src="https://images.unsplash.com/photo-1541963463532-d68292c34b19?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=688&q=80" alt="Book Cover" class="book-cover">
+                        <h3>To Kill a Mockingbird</h3>
+                        <p>Harper Lee</p>
+                        <button class="btn-secondary">Read More</button>
+                    </div>
+                    <div class="book-card">
+                        <img src="https://images.unsplash.com/photo-1543002588-bfa74002ed7e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80" alt="Book Cover" class="book-cover">
+                        <h3>1984</h3>
+                        <p>George Orwell</p>
+                        <button class="btn-secondary">Read More</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="categories">
+                <h2>Book Categories</h2>
+                <div class="category-grid">
+                    <a href="#" class="category-card">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4"></path><path d="m6 8-4 4 4 4"></path><path d="m14.5 4-5 16"></path></svg>
+                        <span>Science Fiction</span>
+                    </a>
+                    <a href="#" class="category-card">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                        <span>Mystery</span>
+                    </a>
+                    <a href="#" class="category-card">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
+                        <span>Romance</span>
+                    </a>
+                    <a href="#" class="category-card">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                        <span>Non-Fiction</span>
+                    </a>
+                </div>
+            </section>
+
+         
+
+            <section id="about">
+                <h2>About Our E-Library</h2>
+                <div class="about-content">
+                    <div class="about-text">
+                        <p>Our voice-driven e-library is designed to make reading accessible to everyone, regardless of physical abilities. With advanced voice recognition technology, users can easily navigate our vast collection of books, search for titles, and enjoy reading without barriers.</p>
+                        <p>We believe that knowledge should be accessible to all, and our mission is to break down the barriers that prevent people from enjoying literature and learning.</p>
+                    </div>
+                    <div class="about-image">
+                        <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Person using voice commands with a computer" width="400" height="300">
+                    </div>
+                </div>
+            </section>
+
+            <section id="contact">
+                <h2>Contact Us</h2>
+                <form id="contact-form">
+                    <div class="form-group">
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message:</label>
+                        <textarea id="message" name="message" required></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">Send Message</button>
+                </form>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 Voice-Driven E-Library. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
